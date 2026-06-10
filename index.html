@@ -3,20 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Trident SPS — Reusable Industrial Containers & Pallets for Cold Chain | Kittery Point, ME</title>
-<meta name="description" content="Trident SPS engineers reusable plastic containers, totes, and pallets as tough as the people who need them. Seafood, pork & poultry, distribution, and pallet solutions for food processors and cold-chain operators nationwide. Get a quote." />
+<title>Trident SPS — Reusable Industrial Containers & Pallets | Kittery Point, ME</title>
+<meta name="description" content="Reusable plastic containers, totes & pallets built tough for seafood, protein & cold-chain operations. Maine-built, trusted nationwide. Get a quote." />
 <link rel="canonical" href="https://www.tridentsps.com/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="author" content="Trident SPS" />
 <meta name="theme-color" content="#3f5767" />
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="Trident SPS" />
+<meta property="og:locale" content="en_US" />
 <meta property="og:title" content="Trident SPS — Reusable Industrial Containers & Pallets" />
 <meta property="og:description" content="A product as tough as the people who need them. Reusable containers and pallets for seafood, protein, and cold-chain operations. Built in Maine, trusted nationwide." />
 <meta property="og:url" content="https://www.tridentsps.com/" />
 <meta property="og:image" content="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffbbc032aa0132e7fac733_Trident-OpenGraph.jpg" />
+<meta property="og:image:alt" content="Trident SPS reusable industrial containers and pallets" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Trident SPS — Reusable Industrial Containers & Pallets" />
+<meta name="twitter:description" content="Reusable containers and pallets for seafood, protein, and cold-chain operations. Built in Maine, trusted nationwide." />
+<meta name="twitter:image" content="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffbbc032aa0132e7fac733_Trident-OpenGraph.jpg" />
 
 <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffbc7b9f4ecd0644a601fc_Trident-Favicon-32x32.png" />
+<link rel="apple-touch-icon" href="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffbc7b9f4ecd0644a601fc_Trident-Favicon-32x32.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,11 +35,13 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": ["Organization", "LocalBusiness"],
+  "@id": "https://www.tridentsps.com/#business",
   "name": "Trident SPS",
   "alternateName": "Trident Sustainable Plastic Solutions",
   "url": "https://www.tridentsps.com/",
   "logo": "https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5ee984840219110563abce71_Trident-Logo.svg",
+  "image": "https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffbbc032aa0132e7fac733_Trident-OpenGraph.jpg",
   "description": "Reusable industrial plastic containers, totes, and pallets for seafood, pork & poultry, distribution, and cold-chain operations.",
   "slogan": "A product as tough as the people who need them.",
   "foundingDate": "2019",
@@ -45,6 +56,15 @@
     "addressRegion": "ME",
     "postalCode": "03905",
     "addressCountry": "US"
+  },
+  "areaServed": { "@type": "Country", "name": "United States" },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+1-207-703-8713",
+    "email": "sales@tridentsps.com",
+    "contactType": "sales",
+    "areaServed": "US",
+    "availableLanguage": "English"
   },
   "telephone": "+1-207-703-8713",
   "email": "sales@tridentsps.com",
@@ -101,7 +121,7 @@
   .hero{position:relative;min-height:88vh;display:flex;align-items:center;color:#fff;overflow:hidden}
   .hero-bg{position:absolute;inset:0;background:url('https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/5fffb41be522017398d0b4a1_Bonar-Hero-lessbirds.jpg') center/cover no-repeat;transform:scale(1.03)}
   .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,rgba(28,40,48,.93) 0%,rgba(44,62,75,.82) 45%,rgba(44,62,75,.45) 100%)}
-  .hero-in{position:relative;z-index:2;max-width:760px;padding:60px 0}
+  .hero-in{position:relative;z-index:2;max-width:760px;padding:60px 0;margin:0}
   .hero h1{font-size:clamp(2.5rem,6vw,4.6rem);font-weight:800;margin:18px 0 0}
   .hero h1 .pop{color:var(--ocean)}
   .hero p.lede{font-size:clamp(1.05rem,2vw,1.3rem);font-weight:300;margin:24px 0 36px;max-width:600px;color:#e7edf0}
@@ -236,14 +256,15 @@
       <a href="#contact">Contact</a>
       <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
     </nav>
-    <button class="menu-btn" onclick="document.querySelector('.nav-links').style.display = (getComputedStyle(this.previousElementSibling).display==='none'||!this._o)?'flex':'none';this._o=!this._o;this.previousElementSibling.style.cssText+=';position:absolute;top:74px;right:0;left:0;background:#2c3e4b;flex-direction:column;padding:20px 24px;gap:18px'">☰</button>
+    <button class="menu-btn" aria-label="Open menu" onclick="document.querySelector('.nav-links').style.display = (getComputedStyle(this.previousElementSibling).display==='none'||!this._o)?'flex':'none';this._o=!this._o;this.previousElementSibling.style.cssText+=';position:absolute;top:74px;right:0;left:0;background:#2c3e4b;flex-direction:column;padding:20px 24px;gap:18px'">☰</button>
   </div>
 </header>
 
 <!-- HERO -->
 <section class="hero" id="top">
   <div class="hero-bg"></div>
-  <div class="wrap hero-in">
+  <div class="wrap">
+   <div class="hero-in">
     <span class="eyebrow">Reusable Industrial Containers · Kittery Point, Maine</span>
     <h1>A product as tough as the <span class="pop">people who need them.</span></h1>
     <p class="lede">Reusable plastic containers, totes, and pallets engineered for the hardest jobs in seafood, protein, and cold-chain — built to outlast the work, season after season.</p>
@@ -257,6 +278,7 @@
       <div class="s"><b>2019</b><span>Maine-Founded</span></div>
       <div class="s"><b>100%</b><span>Repurposed End-of-Life</span></div>
     </div>
+   </div>
   </div>
 </section>
 
@@ -265,11 +287,11 @@
   <div class="wrap">
     <p>Trusted by the operations that can't afford to fail</p>
     <div class="logos">
-      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebd758778c9b35076a7ad4_Trident-Client-PEPSICO.svg" alt="PepsiCo" />
-      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef745f4f5c1ca09006f2_Trident-Client-Perdue.svg" alt="Perdue Farms" />
-      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef8387d96d182525795c_Trident-Client-Olymel.svg" alt="Olymel" />
-      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef98b94b015c3c0f8523_Trident-Client-Darling.svg" alt="Darling Ingredients" />
-      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006efcba9167a1221d6507f_Trident-Client-Norpel.svg" alt="Northern Pelagic Group" />
+      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebd758778c9b35076a7ad4_Trident-Client-PEPSICO.svg" alt="PepsiCo"  loading="lazy" decoding="async" />
+      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef745f4f5c1ca09006f2_Trident-Client-Perdue.svg" alt="Perdue Farms"  loading="lazy" decoding="async" />
+      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef8387d96d182525795c_Trident-Client-Olymel.svg" alt="Olymel"  loading="lazy" decoding="async" />
+      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006ef98b94b015c3c0f8523_Trident-Client-Darling.svg" alt="Darling Ingredients"  loading="lazy" decoding="async" />
+      <img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6006efcba9167a1221d6507f_Trident-Client-Norpel.svg" alt="Northern Pelagic Group"  loading="lazy" decoding="async" />
     </div>
   </div>
 </div>
@@ -312,7 +334,7 @@
     </div>
     <div class="pgrid">
       <div class="pcard">
-        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebce3e6e8d755cd3a6e86b_Trident-Category-Pallets-Seafood.svg" alt="" /></div>
+        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebce3e6e8d755cd3a6e86b_Trident-Category-Pallets-Seafood.svg" alt=""  loading="lazy" decoding="async" /></div>
         <h3>Seafood</h3>
         <p>For the wettest, coldest, most punishing work there is.</p>
         <ul>
@@ -322,7 +344,7 @@
         </ul>
       </div>
       <div class="pcard">
-        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/60072f46c598e0365532fea9_Trident-Category-Pork-Poultry.svg" alt="" /></div>
+        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/60072f46c598e0365532fea9_Trident-Category-Pork-Poultry.svg" alt=""  loading="lazy" decoding="async" /></div>
         <h3>Pork &amp; Poultry</h3>
         <p>Processing-floor containers built for throughput.</p>
         <ul>
@@ -332,7 +354,7 @@
         </ul>
       </div>
       <div class="pcard">
-        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6007325d07b990491ed2fea5_Trident-Category-Distribution.svg" alt="" /></div>
+        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/6007325d07b990491ed2fea5_Trident-Category-Distribution.svg" alt=""  loading="lazy" decoding="async" /></div>
         <h3>Distribution</h3>
         <p>Move product without losing it to broken totes.</p>
         <ul>
@@ -342,7 +364,7 @@
         </ul>
       </div>
       <div class="pcard">
-        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebce2f8593ff0d6a0b614f_Trident-Category-Pallets-Spacers.svg" alt="" /></div>
+        <div class="picon"><img src="https://cdn.prod.website-files.com/5ee04a21bf5e46f657db4482/5eebce2f8593ff0d6a0b614f_Trident-Category-Pallets-Spacers.svg" alt=""  loading="lazy" decoding="async" /></div>
         <h3>Pallets &amp; Spacers</h3>
         <p>The foundation everything else rides on.</p>
         <ul>
@@ -362,7 +384,7 @@
 <section id="story">
   <div class="wrap story">
     <div class="story-img">
-      <img src="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/69af3a7e4624499ba436b845_IMG_6304-p-1080.jpeg" alt="Trident SPS reusable containers in the field" />
+      <img src="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/69af3a7e4624499ba436b845_IMG_6304-p-1080.jpeg" alt="Trident SPS reusable containers in the field" loading="lazy" decoding="async" />
       <div class="badge"><b>Est. 2019</b><span>Father &amp; Son · Kittery Point</span></div>
     </div>
     <div>
@@ -465,7 +487,7 @@
   <div class="wrap">
     <div class="foot-top">
       <div class="flogo">
-        <img src="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/69b0254a001b232766631ee7_Trident-Full-Lockup-White.png" alt="Trident SPS" />
+        <img src="https://cdn.prod.website-files.com/5edf0a9638c614a087970c4c/69b0254a001b232766631ee7_Trident-Full-Lockup-White.png" alt="Trident SPS" loading="lazy" decoding="async" />
         <p>Reusable industrial containers and pallets as tough as the people who need them. Built in Maine, trusted nationwide.</p>
       </div>
       <div class="fcols">
