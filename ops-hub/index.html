@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trident Ops Hub</title>
+  <style>
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --fg: #152033;
+  --muted: #5b6b7c;
+  --line: #d7e0ea;
+  --brand: #0b3b6e;
+  --brand-soft: #e8f1fb;
+  --ok: #0f766e;
+  --ok-soft: #ccfbf1;
+  --warn: #b45309;
+  --warn-soft: #ffedd5;
+  --risk: #b91c1c;
+  --risk-soft: #fee2e2;
+  --bruce: #6d28d9;
+  --bruce-soft: #ede9fe;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --radius: 14px;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--fg); }
+button, input, select, textarea { font: inherit; }
+a { color: inherit; }
+
+.app-shell { max-width: 1200px; margin: 0 auto; padding: 18px 16px 40px; }
+.topbar {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.brand { display: flex; gap: 12px; align-items: center; }
+.mark {
+  width: 42px; height: 42px; border-radius: 12px; background: var(--brand); color: white;
+  display: grid; place-items: center; font-weight: 800; letter-spacing: 0.02em;
+}
+.brand h1 { margin: 0; font-size: 20px; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+.top-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--fg);
+  border-radius: 10px; padding: 9px 12px; cursor: pointer; font-weight: 600;
+}
+.btn:hover { border-color: #b9c7d6; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn.ghost { background: transparent; }
+.btn.danger { background: var(--risk-soft); border-color: #fecaca; color: var(--risk); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.stats {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px;
+}
+.stat {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.stat.alert-stat { background: var(--risk-soft); border-color: #fecaca; }
+.stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+.stat.alert-stat .label { color: var(--risk); }
+.stat .value { font-size: 28px; font-weight: 750; margin-top: 4px; }
+.stat.alert-stat .value { color: var(--risk); }
+
+.shipping-alert-banner {
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+  background: var(--risk-soft); border: 1px solid #fecaca; font-size: 13.5px;
+  display: none;
+}
+.shipping-alert-banner.visible { display: block; }
+.shipping-alert-banner strong { color: var(--risk); }
+.shipping-alert-banner ul { margin: 6px 0 0; padding-left: 18px; }
+.shipping-alert-banner li { margin-bottom: 4px; }
+
+.layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 14px; }
+.panel {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.side { padding: 14px; height: fit-content; position: sticky; top: 12px; }
+.side h2, .main h2, .detail-head h2 { margin: 0 0 10px; font-size: 15px; }
+.nav-btn {
+  width: 100%; text-align: left; border: 0; background: transparent; padding: 10px 12px;
+  border-radius: 10px; cursor: pointer; color: var(--fg); display: flex; justify-content: space-between;
+}
+.nav-btn.active, .nav-btn:hover { background: var(--brand-soft); }
+.nav-btn .count {
+  background: #e2e8f0; border-radius: 999px; min-width: 24px; text-align: center;
+  font-size: 12px; padding: 2px 7px; font-weight: 700;
+}
+.nav-btn.active .count { background: #bfdbfe; }
+
+.main { padding: 14px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.toolbar input, .toolbar select, .field input, .field select, .field textarea {
+  width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; background: #fff;
+}
+.toolbar input { max-width: 280px; }
+.toolbar select { max-width: 200px; }
+
+.table-wrap { overflow: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+tr.order-row { cursor: pointer; }
+tr.order-row:hover { background: #f8fbff; }
+tr.order-row.shipping-due { background: #fff5f5; }
+tr.order-row.shipping-due:hover { background: #fee2e2; }
+.muted { color: var(--muted); }
+.mono { font-variant-numeric: tabular-nums; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; border-radius: 999px;
+  padding: 3px 9px; font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.pill.stage { background: var(--brand-soft); color: var(--brand); }
+.pill.risk { background: var(--risk-soft); color: var(--risk); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.bruce { background: var(--bruce-soft); color: var(--bruce); }
+.pill.ship-alert { background: var(--risk-soft); color: var(--risk); }
+
+.detail-head {
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+  padding: 16px; border-bottom: 1px solid var(--line);
+}
+.detail-grid {
+  display: grid; grid-template-columns: 1.4fr 0.9fr; gap: 14px; padding: 16px;
+}
+.card-block {
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: #fbfcfe;
+}
+.card-block h3 { margin: 0 0 10px; font-size: 14px; }
+.kv { display: grid; grid-template-columns: 140px 1fr; gap: 8px 10px; font-size: 13.5px; }
+.kv .k { color: var(--muted); }
+.stage-rail {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 8px;
+}
+.stage-chip {
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px; background: white; font-size: 11px;
+}
+.stage-chip.done { background: var(--ok-soft); border-color: #99f6e4; }
+.stage-chip.current { background: var(--brand-soft); border-color: #93c5fd; font-weight: 750; }
+.stage-chip.gate { outline: 2px solid #fecaca; }
+.stage-chip .n { display: block; font-weight: 800; margin-bottom: 2px; }
+
+.field { margin-bottom: 10px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 650; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.history { list-style: none; padding: 0; margin: 0; }
+.history li {
+  padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.history li:last-child { border-bottom: 0; }
+
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.45);
+  display: none; align-items: center; justify-content: center; padding: 16px; z-index: 40;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  width: min(560px, 100%); background: white; border-radius: 16px; border: 1px solid var(--line);
+  box-shadow: var(--shadow); padding: 16px;
+}
+.modal h2 { margin: 0 0 12px; font-size: 18px; }
+.banner {
+  border-radius: 12px; padding: 10px 12px; margin-bottom: 12px; font-size: 13px;
+}
+.banner.info { background: var(--brand-soft); color: var(--brand); }
+.banner.warn { background: var(--warn-soft); color: var(--warn); }
+.banner.risk { background: var(--risk-soft); color: var(--risk); }
+
+.empty {
+  padding: 28px 12px; text-align: center; color: var(--muted);
+}
+
+@media (max-width: 920px) {
+  .layout, .detail-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .side { position: static; }
+  .stage-rail { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kv { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark">T</div>
+        <div>
+          <h1>Trident Ops Hub</h1>
+          <p>Phase 1 prototype · one place for every inquiry and work order</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn primary" id="btn-new">+ New inquiry</button>
+        <button class="btn" id="btn-reset" title="Restore sample data">Reset demo data</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="label">Open work</div><div class="value" id="stat-open">0</div></div>
+      <div class="stat"><div class="label">New inquiries</div><div class="value" id="stat-new">0</div></div>
+      <div class="stat"><div class="label">Needs Bruce</div><div class="value" id="stat-bruce">0</div></div>
+      <div class="stat"><div class="label">All records</div><div class="value" id="stat-all">0</div></div>
+      <div class="stat alert-stat" id="stat-shipping-wrap"><div class="label">Shipping due ≤72h</div><div class="value" id="stat-shipping">0</div></div>
+    </div>
+
+    <div class="shipping-alert-banner" id="shipping-alert-banner">
+      <strong>⚠ Shipping deadline within 72 hours</strong>
+      <ul id="shipping-alert-list"></ul>
+    </div>
+
+    <div id="board-view" class="layout">
+      <aside class="panel side">
+        <h2>Views</h2>
+        <div id="nav-filters"></div>
+        <h2 style="margin-top:16px">By stage</h2>
+        <div id="nav-stages"></div>
+      </aside>
+
+      <section class="panel main">
+        <div class="toolbar">
+          <input id="search" type="search" placeholder="Search customer, PO, quote, SKU, blocker…" />
+          <button class="btn primary" id="btn-new-2">+ New inquiry</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Stage</th>
+                <th>Contact</th>
+                <th>PO / Quote</th>
+                <th>Next action</th>
+                <th>Deadline</th>
+                <th>Blocker</th>
+              </tr>
+            </thead>
+            <tbody id="order-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="detail-view" class="panel" hidden>
+      <div class="detail-head">
+        <div>
+          <button class="btn ghost" id="btn-back">← Back to board</button>
+          <h2 id="detail-title" style="margin-top:8px">Customer</h2>
+          <div class="muted" id="detail-sub"></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="btn-save">Save changes</button>
+        </div>
+      </div>
+      <div style="padding: 0 16px">
+        <div id="detail-banners"></div>
+        <h3 style="margin: 8px 0; font-size: 14px">Process position</h3>
+        <div class="stage-rail" id="stage-rail"></div>
+      </div>
+      <div class="detail-grid">
+        <div>
+          <div class="card-block" style="margin-bottom:12px">
+            <h3>Commercial</h3>
+            <div class="kv" id="kv-commercial"></div>
+          </div>
+          <div class="card-block" style="margin-bottom:12px">
+            <h3>Supply &amp; freight</h3>
+            <div class="kv" id="kv-supply"></div>
+          </div>
+          <div class="card-block" style="margin-bottom:12px">
+            <h3>Money</h3>
+            <div class="kv" id="kv-money"></div>
+          </div>
+          <div class="card-block">
+            <h3>Control</h3>
+            <div class="kv" id="kv-control"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card-block" style="margin-bottom:12px">
+            <h3>Update work order</h3>
+            <div class="field">
+              <label for="edit-stage">Stage</label>
+              <select id="edit-stage"></select>
+            </div>
+            <div class="field">
+              <label for="edit-owner">Owner</label>
+              <input id="edit-owner" />
+            </div>
+            <div class="field">
+              <label for="edit-freight-type">Shipping method</label>
+              <select id="edit-freight-type">
+                <option value="">— not set —</option>
+                <option value="CH Robinson">CH Robinson</option>
+                <option value="Customer Supplied Transportation">Customer Supplied Transportation</option>
+                <option value="Standard Mail">Standard Mail</option>
+                <option value="UPS">UPS</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="edit-next">Next action</label>
+              <textarea id="edit-next" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label for="edit-deadline">Deadline</label>
+              <input id="edit-deadline" placeholder="YYYY-MM-DD" />
+            </div>
+            <div class="field">
+              <label for="edit-blocker">Blocker</label>
+              <input id="edit-blocker" />
+            </div>
+            <div class="field">
+              <label for="edit-quote">Quote #</label>
+              <input id="edit-quote" />
+            </div>
+            <div class="field">
+              <label for="edit-po">Customer PO #</label>
+              <input id="edit-po" />
+            </div>
+            <div class="field">
+              <label><input id="edit-bruce" type="checkbox" /> Needs Bruce</label>
+            </div>
+            <div class="field">
+              <label for="edit-bruce-reason">Bruce reason</label>
+              <input id="edit-bruce-reason" placeholder="Pricing / delivery date / credit…" />
+            </div>
+            <div class="field">
+              <label for="edit-notes">Notes</label>
+              <textarea id="edit-notes" rows="4"></textarea>
+            </div>
+            <div class="field" id="followup-section" style="display:none;border-top:1px solid #e0e6ed;padding-top:10px;margin-top:4px">
+              <label style="font-weight:600;font-size:13px;color:#1a2332">Step 12 — Close-out</label>
+              <div style="margin-top:6px">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:normal">
+                  <input id="edit-followup-sent" type="checkbox" />
+                  Follow up email sent
+                </label>
+              </div>
+              <button type="button" class="btn" id="btn-gen-followup" style="margin-top:8px;font-size:12px">Generate email template</button>
+            </div>
+            <p class="muted" style="font-size:12px;margin:0">
+              Acceptance gate is enforced: you can't move past stage 4 without both Quote # and Customer PO.
+            </p>
+          </div>
+          <div class="card-block">
+            <h3>History</h3>
+            <ul class="history" id="history-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal">
+      <h2>New inquiry</h2>
+      <form id="new-form">
+        <div class="field">
+          <label for="new-customer">Customer *</label>
+          <input id="new-customer" required placeholder="Company name" />
+        </div>
+        <div class="field">
+          <label for="new-contact">Contact</label>
+          <input id="new-contact" placeholder="Person" />
+        </div>
+        <div class="field">
+          <label for="new-sku">What they need</label>
+          <input id="new-sku" placeholder="Product / SKU description" />
+        </div>
+        <div class="field">
+          <label for="new-next">First next action</label>
+          <input id="new-next" placeholder="e.g. Pull Daylite history and draft questions" />
+        </div>
+        <div class="field">
+          <label for="new-notes">Notes</label>
+          <textarea id="new-notes" rows="3"></textarea>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary">Create inquiry</button>
+          <button type="button" class="btn" id="btn-close-modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>window.__SEED__ = {
+  "version": 2,
+  "updatedAt": "2026-09-21T10:00:00-04:00",
+  "stages": [
+    { "id": 1, "key": "inquiry", "label": "Inquiry" },
+    { "id": 2, "key": "quote", "label": "Quote" },
+    { "id": 3, "key": "customer_po", "label": "Customer PO" },
+    { "id": 4, "key": "acceptance", "label": "Acceptance review" },
+    { "id": 5, "key": "mfr_po", "label": "Manufacturer PO" },
+    { "id": 6, "key": "mfr_ack", "label": "Manufacturer ack" },
+    { "id": 7, "key": "freight", "label": "Freight / pickup" },
+    { "id": 8, "key": "ship", "label": "BOL / ship" },
+    { "id": 9, "key": "delivery", "label": "Delivery" },
+    { "id": 10, "key": "invoice", "label": "Invoice" },
+    { "id": 11, "key": "ar", "label": "A/R follow-up" },
+    { "id": 12, "key": "crm", "label": "CRM close-out" }
+  ],
+  "orders": [
+    {
+      "id": "WO-2026-0043",
+      "customer": "Snyder Industries",
+      "contact": "Miguel Salgado / Betty Gann",
+      "source": "email",
+      "stage": 7,
+      "sku": "Sanitary pallets — 20 units",
+      "qty": 20,
+      "quoteNo": "Q-9120",
+      "customerPo": "20260805",
+      "mfrPo": "SO-511083",
+      "manufacturer": "Snyder Industries",
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": "2026-09-21",
+      "freight": "Customer pickup from Snyder — coordinate appointment",
+      "freightType": "",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Confirm pickup date with Miguel — Bruce must approve any committed date. Contact: msalgado@snydernet.com",
+      "deadline": "2026-09-24",
+      "blocker": "Pickup date not confirmed — Bruce approval required before committing",
+      "bruceNeeded": true,
+      "bruceReason": "Delivery date commitment",
+      "notes": "Betty Gann (bgann@snydernet.com) confirmed ready for pickup 9/21. Miguel asked for estimated pickup date same day. Do not commit a date without Bruce.",
+      "history": [
+        { "at": "2026-09-15", "text": "Betty Gann: ready for pickup (PO 20260805 / 20260815)" },
+        { "at": "2026-09-21", "text": "Miguel Salgado: requested estimated pickup date" },
+        { "at": "2026-09-21", "text": "Betty Gann: confirmed ready for pickup — order on floor" }
+      ]
+    },
+    {
+      "id": "WO-2026-0044",
+      "customer": "PackEdge",
+      "contact": "Tanner Bowley",
+      "source": "email",
+      "stage": 6,
+      "sku": "E4840 econo pallets",
+      "qty": null,
+      "quoteNo": "Q-9015",
+      "customerPo": "023010",
+      "mfrPo": "T-PO-2310",
+      "manufacturer": "IPL Schoeller",
+      "unitPrice": null,
+      "requestedDate": "2026-10-08",
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": "Customer supplied — Pack Edge arranging own trucks",
+      "freightType": "Customer Supplied Transportation",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Monitor manufacturer completion (~Oct 8). No freight coordination needed — Pack Edge supplying own transport.",
+      "deadline": "2026-10-08",
+      "blocker": null,
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Tanner Bowley (TBowley@packedgeinc.com) confirmed Pack Edge will supply own transportation. No CH Robinson needed. Completion date ~Oct 8 per Bruce.",
+      "history": [
+        { "at": "2026-09-10", "text": "PO 023010 received from Tanner Bowley" },
+        { "at": "2026-09-17", "text": "Bruce: completion ~3 weeks, ~Oct 8" },
+        { "at": "2026-09-21", "text": "Tanner confirmed own transport — Jason not needed" }
+      ]
+    },
+    {
+      "id": "WO-2026-0021",
+      "customer": "Little Bay Lobster / Fidelity Paper",
+      "contact": "Patrick Beckwith",
+      "source": "email",
+      "stage": 2,
+      "sku": "Black/grey combo bins",
+      "qty": null,
+      "quoteNo": "Q-9012",
+      "customerPo": null,
+      "mfrPo": null,
+      "manufacturer": null,
+      "unitPrice": 14.4,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": null,
+      "freightType": "CH Robinson",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Bruce",
+      "nextAction": "Bruce to call Patrick on tariff adder ($11.25 → $14.40)",
+      "deadline": "2026-09-17",
+      "blocker": "Price discussion outstanding — truckload sitting since Aug 28",
+      "bruceNeeded": true,
+      "bruceReason": "Pricing / commercial exception",
+      "notes": "High relationship value. Confirm tariff applicability before locking price.",
+      "history": [
+        { "at": "2026-08-28", "text": "Truckload staged; commercial hold" },
+        { "at": "2026-09-01", "text": "Bruce said he would call to discuss" },
+        { "at": "2026-09-15", "text": "Still open — 12 business days" }
+      ]
+    },
+    {
+      "id": "WO-2026-0028",
+      "customer": "Perdue Farms",
+      "contact": "Jesus Gonzalez",
+      "source": "email",
+      "stage": 2,
+      "sku": "Combo program — pending scope",
+      "qty": null,
+      "quoteNo": null,
+      "customerPo": null,
+      "mfrPo": null,
+      "manufacturer": "Tank Holding / Bonar",
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": null,
+      "freightType": "CH Robinson",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Bruce",
+      "nextAction": "Bruce check-back with Jesus",
+      "deadline": "2026-09-17",
+      "blocker": "Waiting on Bruce follow-up",
+      "bruceNeeded": true,
+      "bruceReason": "Customer follow-up commitment",
+      "notes": "Fairmarkit/portal items remain Bruce-only for specs.",
+      "history": [
+        { "at": "2026-09-05", "text": "Bruce: will check back on the 9th" },
+        { "at": "2026-09-15", "text": "Still open" }
+      ]
+    },
+    {
+      "id": "WO-2026-0033",
+      "customer": "Rustica Foods",
+      "contact": "Procurement",
+      "source": "email",
+      "stage": 1,
+      "sku": "IBC totes — viscosity pending",
+      "qty": null,
+      "quoteNo": null,
+      "customerPo": null,
+      "mfrPo": null,
+      "manufacturer": null,
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": null,
+      "freightType": "",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Chase customer for cP viscosity so tote can be recommended",
+      "deadline": "2026-09-19",
+      "blocker": "Missing product data from customer",
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Cannot quote correctly until viscosity is known.",
+      "history": [
+        { "at": "2026-09-08", "text": "Inquiry logged — waiting on cP viscosity" }
+      ]
+    },
+    {
+      "id": "WO-2026-0037",
+      "customer": "Locals Seafood",
+      "contact": "Eric Montagne",
+      "source": "email",
+      "stage": 2,
+      "sku": "85L fish tote + Pure-T 70L sample",
+      "qty": null,
+      "quoteNo": "Q-9104",
+      "customerPo": null,
+      "mfrPo": null,
+      "manufacturer": null,
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": null,
+      "freightType": "Standard Mail",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Confirm ship date on 85L quote; track Pure-T 70L sample ordered Sep 8",
+      "deadline": "2026-09-18",
+      "blocker": "Sample shipment record not found",
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Draft sample-order acknowledgment was staged earlier.",
+      "history": [
+        { "at": "2026-09-08", "text": "Pure-T 70L sample ordered" },
+        { "at": "2026-09-15", "text": "No shipment record found yet" }
+      ]
+    },
+    {
+      "id": "WO-2026-0040",
+      "customer": "Trawlworks",
+      "contact": "Steve Taber",
+      "source": "email",
+      "stage": 2,
+      "sku": "Quote correction needed",
+      "qty": null,
+      "quoteNo": "Q-9110",
+      "customerPo": null,
+      "mfrPo": null,
+      "manufacturer": null,
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": null,
+      "freightType": "CH Robinson",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Bruce",
+      "nextAction": "Get corrected unit price (quote showed $28,29.50) + small-qty breaks",
+      "deadline": "2026-09-17",
+      "blocker": "Unreadable price on quote — customer cannot parse",
+      "bruceNeeded": true,
+      "bruceReason": "Pricing",
+      "notes": "Blocked on Bruce number before Emily can send clean quote.",
+      "history": [
+        { "at": "2026-09-12", "text": "Quote went out with malformed price string" }
+      ]
+    },
+    {
+      "id": "WO-2026-0042",
+      "customer": "Young Packaging",
+      "contact": "Cody / Scott Young",
+      "source": "email",
+      "stage": 3,
+      "sku": "Sanibox ~4in deeper options",
+      "qty": null,
+      "quoteNo": "Q-9088",
+      "customerPo": "Pending — Paula pickup",
+      "mfrPo": null,
+      "manufacturer": null,
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": null,
+      "freight": "Arrange Paula pickup once PO lands",
+      "freightType": "Customer Supplied Transportation",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Watch for PO; then schedule Paula pickup",
+      "deadline": "2026-09-20",
+      "blocker": "PO not received yet",
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Options draft for deeper Saniboxes was prepared.",
+      "history": [
+        { "at": "2026-09-10", "text": "Deeper Sanibox options discussed" },
+        { "at": "2026-09-15", "text": "Pickup to arrange after PO" }
+      ]
+    },
+    {
+      "id": "WO-2026-0008",
+      "customer": "New England Marine",
+      "contact": "Receiving",
+      "source": "email",
+      "stage": 12,
+      "sku": "Bulk order — closed example",
+      "qty": 48,
+      "quoteNo": "Q-8602",
+      "customerPo": "104716",
+      "mfrPo": "T-PO-2104",
+      "manufacturer": "IPL Schoeller",
+      "unitPrice": 186,
+      "requestedDate": "2026-08-28",
+      "confirmedDate": "2026-08-28",
+      "readyDate": "2026-08-26",
+      "freight": "CH Robinson",
+      "freightType": "CH Robinson",
+      "bol": "BOL-NEM-0828",
+      "invoiceNo": "INV-43610",
+      "amount": 8928,
+      "paymentStatus": "Paid",
+      "owner": "Bruce",
+      "nextAction": "None — closed reference order",
+      "deadline": null,
+      "blocker": null,
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Example closed order for training — full path completed.",
+      "history": [
+        { "at": "2026-08-12", "text": "Inquiry received" },
+        { "at": "2026-08-14", "text": "Quote accepted" },
+        { "at": "2026-08-18", "text": "PO matched quote — acceptance cleared" },
+        { "at": "2026-08-26", "text": "Manufacturer ready" },
+        { "at": "2026-08-28", "text": "Delivered + invoiced" },
+        { "at": "2026-09-10", "text": "Paid — CRM closed" }
+      ]
+    }
+  ]
+}
+;</script>
+<script>
+const STORAGE_KEY = "trident-ops-hub-v2";
+const FREIGHT_OPTIONS = [
+  { value: "", label: "— not set —" },
+  { value: "CH Robinson", label: "CH Robinson" },
+  { value: "Customer Supplied Transportation", label: "Customer Supplied Transportation" },
+  { value: "Standard Mail", label: "Standard Mail" },
+];
+
+const state = {
+  view: "board",
+  filter: "open",
+  query: "",
+  selectedId: null,
+  stages: [],
+  orders: [],
+};
+
+function $(sel) {
+  return document.querySelector(sel);
+}
+
+function stageLabel(n) {
+  const s = state.stages.find((x) => x.id === Number(n));
+  return s ? `${s.id}. ${s.label}` : `Stage ${n}`;
+}
+
+function isOpen(order) {
+  return Number(order.stage) < 12;
+}
+
+function daysInStageHint(order) {
+  const last = (order.history || [])[order.history.length - 1];
+  if (!last?.at) return "";
+  const then = new Date(last.at + "T12:00:00");
+  const now = new Date();
+  const days = Math.max(0, Math.round((now - then) / 86400000));
+  return days === 0 ? "today" : `${days}d in stage`;
+}
+
+function hoursUntilDeadline(deadline) {
+  if (!deadline) return null;
+  const dl = new Date(deadline + "T23:59:59");
+  const now = new Date();
+  return (dl - now) / 3600000;
+}
+
+function shippingAlerts() {
+  return state.orders.filter((o) => {
+    if (!isOpen(o)) return false;
+    const stage = Number(o.stage);
+    if (stage < 7 || stage > 8) return false;
+    if (!o.deadline) return false;
+    const hrs = hoursUntilDeadline(o.deadline);
+    return hrs !== null && hrs <= 72;
+  });
+}
+
+async function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      state.stages = parsed.stages;
+      state.orders = parsed.orders;
+      return;
+    } catch {
+      /* fall through */
+    }
+  }
+  const data = window.__SEED__;
+  state.stages = data.stages;
+  state.orders = JSON.parse(JSON.stringify(data.orders));
+  persist();
+}
+
+function persist() {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      stages: state.stages,
+      orders: state.orders,
+      savedAt: new Date().toISOString(),
+    })
+  );
+}
+
+function filteredOrders() {
+  let list = [...state.orders];
+  if (state.filter === "open") list = list.filter(isOpen);
+  if (state.filter === "new") list = list.filter((o) => Number(o.stage) === 1);
+  if (state.filter === "bruce") list = list.filter((o) => o.bruceNeeded && isOpen(o));
+  if (state.filter === "shipping-alerts") list = shippingAlerts();
+  if (state.filter === "all") list = list;
+  if (String(state.filter).startsWith("stage:")) {
+    const n = Number(String(state.filter).split(":")[1]);
+    list = list.filter((o) => Number(o.stage) === n);
+  }
+  const q = state.query.trim().toLowerCase();
+  if (q) {
+    list = list.filter((o) =>
+      [
+        o.id, o.customer, o.contact, o.customerPo, o.quoteNo,
+        o.sku, o.invoiceNo, o.bol, o.blocker, o.nextAction,
+      ]
+        .filter(Boolean).join(" ").toLowerCase().includes(q)
+    );
+  }
+  return list.sort((a, b) => {
+    if (!!b.bruceNeeded - !!a.bruceNeeded) return !!b.bruceNeeded - !!a.bruceNeeded;
+    return Number(a.stage) - Number(b.stage) || String(a.customer).localeCompare(String(b.customer));
+  });
+}
+
+function counts() {
+  return {
+    open: state.orders.filter(isOpen).length,
+    new: state.orders.filter((o) => Number(o.stage) === 1).length,
+    bruce: state.orders.filter((o) => o.bruceNeeded && isOpen(o)).length,
+    all: state.orders.length,
+    shipping: shippingAlerts().length,
+  };
+}
+
+function renderStats() {
+  const c = counts();
+  $("#stat-open").textContent = c.open;
+  $("#stat-new").textContent = c.new;
+  $("#stat-bruce").textContent = c.bruce;
+  $("#stat-all").textContent = c.all;
+  $("#stat-shipping").textContent = c.shipping;
+  const wrap = $("#stat-shipping-wrap");
+  wrap.classList.toggle("alert-stat", c.shipping > 0);
+}
+
+function renderShippingAlerts() {
+  const alerts = shippingAlerts();
+  const banner = $("#shipping-alert-banner");
+  const list = $("#shipping-alert-list");
+  if (!alerts.length) {
+    banner.classList.remove("visible");
+    return;
+  }
+  banner.classList.add("visible");
+  list.innerHTML = alerts.map((o) => {
+    const hrs = hoursUntilDeadline(o.deadline);
+    const timeStr = hrs < 0
+      ? `<strong>OVERDUE</strong>`
+      : hrs < 24
+        ? `<strong>${Math.round(hrs)}h remaining</strong>`
+        : `<strong>${Math.round(hrs / 24 * 10) / 10}d remaining</strong>`;
+    return `<li>${escapeHtml(o.customer)} — ${escapeHtml(o.id)} (${escapeHtml(stageLabel(o.stage))}) · deadline ${escapeHtml(o.deadline)} · ${timeStr}</li>`;
+  }).join("");
+}
+
+function renderNav() {
+  const c = counts();
+  const items = [
+    ["open", "Open work", c.open],
+    ["new", "New inquiries", c.new],
+    ["bruce", "Needs Bruce", c.bruce],
+    ["shipping-alerts", "Shipping due ≤72h", c.shipping],
+    ["all", "All work orders", c.all],
+  ];
+  $("#nav-filters").innerHTML = items
+    .map(
+      ([id, label, count]) => `
+      <button class="nav-btn ${state.filter === id ? "active" : ""}" data-filter="${id}">
+        <span>${label}</span><span class="count">${count}</span>
+      </button>`
+    )
+    .join("");
+
+  $("#nav-stages").innerHTML = state.stages
+    .map((s) => {
+      const count = state.orders.filter((o) => Number(o.stage) === s.id).length;
+      const key = `stage:${s.id}`;
+      return `<button class="nav-btn ${state.filter === key ? "active" : ""}" data-filter="${key}">
+        <span>${s.id}. ${s.label}</span><span class="count">${count}</span>
+      </button>`;
+    })
+    .join("");
+}
+
+function renderBoard() {
+  $("#board-view").hidden = false;
+  $("#detail-view").hidden = true;
+  renderStats();
+  renderShippingAlerts();
+  renderNav();
+  const alertIds = new Set(shippingAlerts().map((o) => o.id));
+  const list = filteredOrders();
+  const body = $("#order-rows");
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="7"><div class="empty">No work orders in this view.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = list
+    .map((o) => {
+      const isShipAlert = alertIds.has(o.id);
+      const hrs = isShipAlert ? hoursUntilDeadline(o.deadline) : null;
+      const pills = [
+        `<span class="pill stage">${stageLabel(o.stage)}</span>`,
+        o.bruceNeeded ? `<span class="pill bruce">Bruce</span>` : "",
+        isShipAlert ? `<span class="pill ship-alert">⚠ Ship ≤72h</span>` : "",
+        o.blocker ? `<span class="pill warn">Blocked</span>` : "",
+        !isOpen(o) ? `<span class="pill ok">Closed</span>` : "",
+      ]
+        .filter(Boolean).join(" ");
+      return `<tr class="order-row${isShipAlert ? " shipping-due" : ""}" data-id="${o.id}">
+        <td><strong>${escapeHtml(o.customer)}</strong><div class="muted mono">${escapeHtml(o.id)}</div></td>
+        <td>${pills}</td>
+        <td>${escapeHtml(o.contact || "—")}</td>
+        <td>${escapeHtml(o.customerPo || o.quoteNo || "—")}</td>
+        <td>${escapeHtml(o.nextAction || "—")}<div class="muted">${escapeHtml(o.owner || "")}</div></td>
+        <td>${escapeHtml(o.deadline || "—")}<div class="muted">${escapeHtml(daysInStageHint(o))}</div></td>
+        <td>${escapeHtml(o.blocker || "—")}</td>
+      </tr>`;
+    })
+    .join("");
+}
+
+function acceptanceBlocked(order) {
+  return !order.customerPo || !order.quoteNo;
+}
+
+function renderDetail(id) {
+  const order = state.orders.find((o) => o.id === id);
+  if (!order) {
+    state.view = "board";
+    render();
+    return;
+  }
+  state.selectedId = id;
+  state.view = "detail";
+  $("#board-view").hidden = true;
+  $("#detail-view").hidden = false;
+
+  $("#detail-title").textContent = order.customer;
+  $("#detail-sub").textContent = `${order.id} · ${order.contact || "No contact"} · ${stageLabel(order.stage)}`;
+
+  const banners = [];
+
+  // 72-hour shipping alert
+  if (isOpen(order) && Number(order.stage) >= 7 && Number(order.stage) <= 8 && order.deadline) {
+    const hrs = hoursUntilDeadline(order.deadline);
+    if (hrs !== null && hrs <= 72) {
+      const urgency = hrs < 0 ? "OVERDUE" : hrs < 24 ? `${Math.round(hrs)}h remaining` : `${Math.round(hrs / 24 * 10) / 10} days remaining`;
+      banners.push(`<div class="banner risk"><strong>⚠ Shipping deadline within 72 hours:</strong> ${escapeHtml(order.deadline)} · ${urgency}</div>`);
+    }
+  }
+
+  if (order.bruceNeeded) {
+    banners.push(`<div class="banner warn"><strong>Needs Bruce:</strong> ${escapeHtml(order.bruceReason || "Decision required")}</div>`);
+  }
+  if (order.blocker) {
+    banners.push(`<div class="banner risk"><strong>Blocker:</strong> ${escapeHtml(order.blocker)}</div>`);
+  }
+  if (Number(order.stage) === 4 && acceptanceBlocked(order)) {
+    banners.push(`<div class="banner risk"><strong>Acceptance gate:</strong> PO and quote identifiers must both be present before advancing.</div>`);
+  }
+  $("#detail-banners").innerHTML = banners.join("");
+
+  $("#stage-rail").innerHTML = state.stages
+    .map((s) => {
+      const cls = [
+        "stage-chip",
+        s.id < order.stage ? "done" : "",
+        s.id === order.stage ? "current" : "",
+        s.id === 4 ? "gate" : "",
+      ]
+        .filter(Boolean).join(" ");
+      return `<div class="${cls}"><span class="n">${s.id}</span>${escapeHtml(s.label)}</div>`;
+    })
+    .join("");
+
+  $("#kv-commercial").innerHTML = kvPairs([
+    ["SKU / product", order.sku],
+    ["Qty", order.qty],
+    ["Unit price", order.unitPrice != null ? `$${order.unitPrice}` : null],
+    ["Quote #", order.quoteNo],
+    ["Customer PO", order.customerPo],
+    ["Requested date", order.requestedDate],
+    ["Confirmed date", order.confirmedDate],
+  ]);
+
+  const freightDisplay = order.freightType || order.freight;
+  $("#kv-supply").innerHTML = kvPairs([
+    ["Manufacturer", order.manufacturer],
+    ["Mfr PO", order.mfrPo],
+    ["Ready date", order.readyDate],
+    ["Shipping method", order.freightType || "—"],
+    ["Freight notes", order.freight],
+    ["BOL / PRO", order.bol],
+  ]);
+
+  $("#kv-money").innerHTML = kvPairs([
+    ["Invoice #", order.invoiceNo],
+    ["Amount", order.amount != null ? `$${Number(order.amount).toLocaleString()}` : null],
+    ["Payment", order.paymentStatus],
+  ]);
+
+  $("#kv-control").innerHTML = kvPairs([
+    ["Owner", order.owner],
+    ["Next action", order.nextAction],
+    ["Deadline", order.deadline],
+    ["Source", order.source],
+    ["Notes", order.notes],
+  ]);
+
+  $("#history-list").innerHTML = (order.history || [])
+    .slice().reverse()
+    .map((h) => `<li><strong>${escapeHtml(h.at)}</strong> — ${escapeHtml(h.text)}</li>`)
+    .join("") || `<li class="muted">No history yet</li>`;
+
+  // editor fields
+  $("#edit-stage").innerHTML = state.stages
+    .map((s) => `<option value="${s.id}" ${Number(order.stage) === s.id ? "selected" : ""}>${s.id}. ${s.label}</option>`)
+    .join("");
+  $("#edit-owner").value = order.owner || "";
+  $("#edit-freight-type").value = order.freightType || "";
+  $("#edit-next").value = order.nextAction || "";
+  $("#edit-deadline").value = order.deadline || "";
+  $("#edit-blocker").value = order.blocker || "";
+  $("#edit-notes").value = order.notes || "";
+  $("#edit-quote").value = order.quoteNo || "";
+  $("#edit-po").value = order.customerPo || "";
+  $("#edit-bruce").checked = !!order.bruceNeeded;
+  $("#edit-bruce-reason").value = order.bruceReason || "";
+
+  // Step 12 close-out section
+  const isStage12 = Number(order.stage) === 12;
+  $("#followup-section").style.display = isStage12 ? "block" : "none";
+  $("#edit-followup-sent").checked = !!order.followUpSent;
+}
+
+function kvPairs(rows) {
+  return rows
+    .map(
+      ([k, v]) => `<div class="k">${escapeHtml(k)}</div><div>${escapeHtml(v == null || v === "" ? "—" : String(v))}</div>`
+    )
+    .join("");
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function saveDetailEdits() {
+  const order = state.orders.find((o) => o.id === state.selectedId);
+  if (!order) return;
+  const nextStage = Number($("#edit-stage").value);
+  const prevStage = Number(order.stage);
+
+  if (nextStage > 4 && (!($("#edit-quote").value.trim() && $("#edit-po").value.trim()))) {
+    alert("Acceptance gate: add both Quote # and Customer PO before moving past Acceptance review.");
+    return;
+  }
+
+  order.owner = $("#edit-owner").value.trim();
+  order.freightType = $("#edit-freight-type").value;
+  order.nextAction = $("#edit-next").value.trim();
+  order.deadline = $("#edit-deadline").value.trim();
+  order.blocker = $("#edit-blocker").value.trim();
+  order.notes = $("#edit-notes").value.trim();
+  order.quoteNo = $("#edit-quote").value.trim();
+  order.customerPo = $("#edit-po").value.trim();
+  order.bruceNeeded = $("#edit-bruce").checked;
+  order.bruceReason = $("#edit-bruce-reason").value.trim();
+
+  const prevFollowUp = !!order.followUpSent;
+  order.followUpSent = $("#edit-followup-sent").checked;
+  if (order.followUpSent && !prevFollowUp) {
+    order.history = order.history || [];
+    order.history.push({ at: new Date().toISOString().slice(0, 10), text: "Follow up email sent — order closed" });
+  }
+
+  if (nextStage !== prevStage) {
+    if (nextStage > 4 && acceptanceBlocked(order)) {
+      alert("Acceptance gate: PO and quote must both be set before advancing past acceptance.");
+      return;
+    }
+    order.stage = nextStage;
+    order.history = order.history || [];
+    order.history.push({
+      at: new Date().toISOString().slice(0, 10),
+      text: `Stage moved to ${stageLabel(nextStage)}`,
+    });
+  } else {
+    order.history = order.history || [];
+    order.history.push({
+      at: new Date().toISOString().slice(0, 10),
+      text: "Work order updated",
+    });
+  }
+
+  persist();
+  renderDetail(order.id);
+}
+
+function createInquiry(payload) {
+  const n = state.orders.length + 1;
+  const id = `WO-2026-${String(1000 + n).slice(-4)}`;
+  const order = {
+    id,
+    customer: payload.customer,
+    contact: payload.contact,
+    source: payload.source || "manual",
+    stage: 1,
+    sku: payload.sku || "TBD",
+    qty: payload.qty || null,
+    quoteNo: null,
+    customerPo: null,
+    mfrPo: null,
+    manufacturer: null,
+    unitPrice: null,
+    requestedDate: payload.requestedDate || null,
+    confirmedDate: null,
+    readyDate: null,
+    freight: null,
+    freightType: "",
+    bol: null,
+    invoiceNo: null,
+    amount: null,
+    paymentStatus: "n/a",
+    owner: payload.owner || "Emily",
+    nextAction: payload.nextAction || "Triage inquiry and pull customer history",
+    deadline: payload.deadline || null,
+    blocker: null,
+    bruceNeeded: false,
+    bruceReason: "",
+    notes: payload.notes || "",
+    followUpSent: false,
+    history: [{ at: new Date().toISOString().slice(0, 10), text: "Inquiry created in Ops Hub" }],
+  };
+  state.orders.unshift(order);
+  persist();
+  closeModal();
+  state.filter = "new";
+  renderDetail(order.id);
+}
+
+function generateFollowupEmail() {
+  const order = state.orders.find((o) => o.id === state.selectedId);
+  if (!order) return;
+  const company = order.customer || "Valued Customer";
+  const template = `Hi ${company},\n\nI wanted to follow up and thank you for your business with Trident. We take pride in every order that we fulfill. For any further assistance with this order please respond here. We value your time and business. Looking forward to future orders.\n\nRegards,\nBruce Hannough\nTrident Sustainable Plastics Solutions\n(207) 703-8172\nbruce@tridentsps.com`;
+  const ta = document.createElement("textarea");
+  ta.value = template;
+  ta.style.cssText = "position:fixed;opacity:0";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch(_) {}
+  document.body.removeChild(ta);
+  alert("Follow-up email template copied to clipboard:\n\n" + template);
+}
+
+function resetSeed() {
+  if (!confirm("Reset to the current work orders? Your local edits will be cleared.")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  loadData().then(() => {
+    state.view = "board";
+    state.filter = "open";
+    render();
+  });
+}
+
+function openModal() {
+  $("#modal").classList.add("open");
+  $("#new-customer").focus();
+}
+function closeModal() {
+  $("#modal").classList.remove("open");
+}
+
+function render() {
+  if (state.view === "detail" && state.selectedId) renderDetail(state.selectedId);
+  else renderBoard();
+}
+
+function bind() {
+  document.body.addEventListener("click", (e) => {
+    const nav = e.target.closest("[data-filter]");
+    if (nav) {
+      state.filter = nav.getAttribute("data-filter");
+      state.view = "board";
+      render();
+      return;
+    }
+    const row = e.target.closest("tr.order-row");
+    if (row) {
+      renderDetail(row.getAttribute("data-id"));
+      return;
+    }
+  });
+
+  $("#search").addEventListener("input", (e) => {
+    state.query = e.target.value;
+    if (state.view === "board") renderBoard();
+  });
+
+  $("#btn-back").addEventListener("click", () => {
+    state.view = "board";
+    render();
+  });
+  $("#btn-new").addEventListener("click", openModal);
+  $("#btn-new-2").addEventListener("click", openModal);
+  $("#btn-reset").addEventListener("click", resetSeed);
+  $("#btn-close-modal").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", (e) => {
+    if (e.target.id === "modal") closeModal();
+  });
+  $("#btn-save").addEventListener("click", saveDetailEdits);
+  $("#new-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    createInquiry({
+      customer: $("#new-customer").value.trim(),
+      contact: $("#new-contact").value.trim(),
+      sku: $("#new-sku").value.trim(),
+      nextAction: $("#new-next").value.trim(),
+      notes: $("#new-notes").value.trim(),
+      owner: "Emily",
+      source: "manual",
+    });
+    e.target.reset();
+  });
+
+  $("#btn-gen-followup").addEventListener("click", generateFollowupEmail);
+
+  $("#edit-stage").addEventListener("change", (e) => {
+    $("#followup-section").style.display = Number(e.target.value) === 12 ? "block" : "none";
+  });
+}
+
+async function init() {
+  await loadData();
+  bind();
+  render();
+}
+
+init();
+
+</script>
+</body>
+</html>
