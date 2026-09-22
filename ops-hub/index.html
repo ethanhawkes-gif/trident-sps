@@ -225,7 +225,7 @@ tr.order-row.pickup-overdue:hover { background: #fef3c7; }
     <div class="stats">
       <div class="stat"><div class="label">Open work</div><div class="value" id="stat-open">0</div></div>
       <div class="stat"><div class="label">New inquiries</div><div class="value" id="stat-new">0</div></div>
-      <div class="stat"><div class="label">Needs Bruce</div><div class="value" id="stat-bruce">0</div></div>
+      <div class="stat"><div class="label">Needs Approval</div><div class="value" id="stat-bruce">0</div></div>
       <div class="stat"><div class="label">All records</div><div class="value" id="stat-all">0</div></div>
       <div class="stat alert-stat" id="stat-shipping-wrap"><div class="label">Shipping due ≤72h</div><div class="value" id="stat-shipping">0</div></div>
       <div class="stat" id="stat-pickup-wrap"><div class="label">Awaiting pickup</div><div class="value" id="stat-pickup">0</div></div>
@@ -334,6 +334,10 @@ tr.order-row.pickup-overdue:hover { background: #fef3c7; }
               <input id="edit-confirmed-date" placeholder="YYYY-MM-DD — set when carrier confirms" />
             </div>
             <div class="field">
+              <label for="edit-pickup-location">Pickup location</label>
+              <textarea id="edit-pickup-location" rows="2" placeholder="Warehouse name, address, contact"></textarea>
+            </div>
+            <div class="field">
               <label for="edit-next">Next action</label>
               <textarea id="edit-next" rows="3"></textarea>
             </div>
@@ -354,10 +358,10 @@ tr.order-row.pickup-overdue:hover { background: #fef3c7; }
               <input id="edit-po" />
             </div>
             <div class="field">
-              <label><input id="edit-bruce" type="checkbox" /> Needs Bruce</label>
+              <label><input id="edit-bruce" type="checkbox" /> Needs Approval</label>
             </div>
             <div class="field">
-              <label for="edit-bruce-reason">Bruce reason</label>
+              <label for="edit-bruce-reason">Approval reason</label>
               <input id="edit-bruce-reason" placeholder="Pricing / delivery date / credit…" />
             </div>
             <div class="field">
@@ -455,6 +459,7 @@ tr.order-row.pickup-overdue:hover { background: #fef3c7; }
       "readyDate": "2026-09-21",
       "freight": "Customer pickup from Snyder — coordinate appointment",
       "freightType": "",
+      "pickupLocation": "Snyder Industries — 736 Birginal Drive, Bensenville, IL 60106 — c/o Miguel Salgado (msalgado@snydernet.com)",
       "bol": null,
       "invoiceNo": null,
       "amount": null,
@@ -728,6 +733,7 @@ tr.order-row.pickup-overdue:hover { background: #fef3c7; }
       "readyDate": "2026-09-22",
       "freight": "CH Robinson — Jason Jenkins (913-713-1635). Pickup from West Chicago, IL by 9/26",
       "freightType": "CH Robinson",
+      "pickupLocation": "Bonar Plastics — 1005 Atlantic Drive, West Chicago, IL 60185 — c/o Emanuel Batista — Shipping hours: 7AM–5PM",
       "bol": null,
       "invoiceNo": null,
       "amount": null,
@@ -979,7 +985,7 @@ function renderNav() {
   const items = [
     ["open", "Open work", c.open],
     ["new", "New inquiries", c.new],
-    ["bruce", "Needs Bruce", c.bruce],
+    ["bruce", "Needs Approval", c.bruce],
     ["pickup-unscheduled", "Awaiting pickup", c.pickup],
     ["shipping-alerts", "Shipping due ≤72h", c.shipping],
     ["all", "All work orders", c.all],
@@ -1027,7 +1033,7 @@ function renderBoard() {
       const rowClass = isShipAlert ? " shipping-due" : isPickupPending && pickupDays >= 1 ? " pickup-overdue" : "";
       const pills = [
         `<span class="pill stage">${stageLabel(o.stage)}</span>`,
-        o.bruceNeeded ? `<span class="pill bruce">Bruce</span>` : "",
+        o.bruceNeeded ? `<span class="pill bruce">Approval</span>` : "",
         isShipAlert ? `<span class="pill ship-alert">⚠ Ship ≤72h</span>` : "",
         isPickupPending ? `<span class="pill pickup-alert">📦 No pickup date</span>` : "",
         o.blocker ? `<span class="pill warn">Blocked</span>` : "",
@@ -1088,7 +1094,7 @@ function renderDetail(id) {
   }
 
   if (order.bruceNeeded) {
-    banners.push(`<div class="banner warn"><strong>Needs Bruce:</strong> ${escapeHtml(order.bruceReason || "Decision required")}</div>`);
+    banners.push(`<div class="banner warn"><strong>Needs Approval:</strong> ${escapeHtml(order.bruceReason || "Decision required")}</div>`);
   }
   if (order.blocker) {
     banners.push(`<div class="banner risk"><strong>Blocker:</strong> ${escapeHtml(order.blocker)}</div>`);
@@ -1124,6 +1130,7 @@ function renderDetail(id) {
   $("#kv-supply").innerHTML = kvPairs([
     ["Manufacturer", order.manufacturer],
     ["Mfr PO", order.mfrPo],
+    ["Pickup location", order.pickupLocation],
     ["Ready date", order.readyDate],
     ["Pickup confirmed", order.confirmedDate || "Not scheduled"],
     ["Shipping method", order.freightType || "—"],
@@ -1157,6 +1164,7 @@ function renderDetail(id) {
   $("#edit-owner").value = order.owner || "";
   $("#edit-freight-type").value = order.freightType || "";
   $("#edit-confirmed-date").value = order.confirmedDate || "";
+  $("#edit-pickup-location").value = order.pickupLocation || "";
   $("#edit-next").value = order.nextAction || "";
   $("#edit-deadline").value = order.deadline || "";
   $("#edit-blocker").value = order.blocker || "";
@@ -1203,6 +1211,7 @@ function saveDetailEdits() {
   order.owner = $("#edit-owner").value.trim();
   order.freightType = $("#edit-freight-type").value;
   order.confirmedDate = $("#edit-confirmed-date").value.trim() || null;
+  order.pickupLocation = $("#edit-pickup-location").value.trim() || null;
   if (order.confirmedDate && !prevConfirmedDate) {
     order.history = order.history || [];
     order.history.push({ at: new Date().toISOString().slice(0, 10), text: `Pickup confirmed for ${order.confirmedDate}` });
