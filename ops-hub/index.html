@@ -56,17 +56,20 @@ a { color: inherit; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .stats {
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px;
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px;
 }
 .stat {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 14px 16px; box-shadow: var(--shadow);
 }
 .stat.alert-stat { background: var(--risk-soft); border-color: #fecaca; }
+.stat.warn-stat { background: var(--warn-soft); border-color: #fed7aa; }
 .stat .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
 .stat.alert-stat .label { color: var(--risk); }
+.stat.warn-stat .label { color: var(--warn); }
 .stat .value { font-size: 28px; font-weight: 750; margin-top: 4px; }
 .stat.alert-stat .value { color: var(--risk); }
+.stat.warn-stat .value { color: var(--warn); }
 
 .shipping-alert-banner {
   border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
@@ -77,6 +80,16 @@ a { color: inherit; }
 .shipping-alert-banner strong { color: var(--risk); }
 .shipping-alert-banner ul { margin: 6px 0 0; padding-left: 18px; }
 .shipping-alert-banner li { margin-bottom: 4px; }
+
+.pickup-alert-banner {
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 14px;
+  background: var(--warn-soft); border: 1px solid #fed7aa; font-size: 13.5px;
+  display: none;
+}
+.pickup-alert-banner.visible { display: block; }
+.pickup-alert-banner strong { color: var(--warn); }
+.pickup-alert-banner ul { margin: 6px 0 0; padding-left: 18px; }
+.pickup-alert-banner li { margin-bottom: 4px; }
 
 .layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 14px; }
 .panel {
@@ -112,6 +125,8 @@ tr.order-row { cursor: pointer; }
 tr.order-row:hover { background: #f8fbff; }
 tr.order-row.shipping-due { background: #fff5f5; }
 tr.order-row.shipping-due:hover { background: #fee2e2; }
+tr.order-row.pickup-overdue { background: #fffbeb; }
+tr.order-row.pickup-overdue:hover { background: #fef3c7; }
 .muted { color: var(--muted); }
 .mono { font-variant-numeric: tabular-nums; }
 
@@ -125,6 +140,7 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
 .pill.ok { background: var(--ok-soft); color: var(--ok); }
 .pill.bruce { background: var(--bruce-soft); color: var(--bruce); }
 .pill.ship-alert { background: var(--risk-soft); color: var(--risk); }
+.pill.pickup-alert { background: var(--warn-soft); color: var(--warn); }
 
 .detail-head {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
@@ -212,11 +228,17 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
       <div class="stat"><div class="label">Needs Bruce</div><div class="value" id="stat-bruce">0</div></div>
       <div class="stat"><div class="label">All records</div><div class="value" id="stat-all">0</div></div>
       <div class="stat alert-stat" id="stat-shipping-wrap"><div class="label">Shipping due ≤72h</div><div class="value" id="stat-shipping">0</div></div>
+      <div class="stat" id="stat-pickup-wrap"><div class="label">Awaiting pickup</div><div class="value" id="stat-pickup">0</div></div>
     </div>
 
     <div class="shipping-alert-banner" id="shipping-alert-banner">
       <strong>⚠ Shipping deadline within 72 hours</strong>
       <ul id="shipping-alert-list"></ul>
+    </div>
+
+    <div class="pickup-alert-banner" id="pickup-alert-banner">
+      <strong>📦 Awaiting pickup scheduling</strong> — pack slip ready, freight not yet confirmed
+      <ul id="pickup-alert-list"></ul>
     </div>
 
     <div id="board-view" class="layout">
@@ -308,6 +330,10 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
               </select>
             </div>
             <div class="field">
+              <label for="edit-confirmed-date">Pickup / ship date confirmed</label>
+              <input id="edit-confirmed-date" placeholder="YYYY-MM-DD — set when carrier confirms" />
+            </div>
+            <div class="field">
               <label for="edit-next">Next action</label>
               <textarea id="edit-next" rows="3"></textarea>
             </div>
@@ -394,7 +420,7 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
   </div>
 
   <script>window.__SEED__ = {
-  "version": 2,
+  "version": 3,
   "updatedAt": "2026-09-21T10:00:00-04:00",
   "stages": [
     { "id": 1, "key": "inquiry", "label": "Inquiry" },
@@ -685,6 +711,39 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
       ]
     },
     {
+      "id": "WO-2026-0045",
+      "customer": "Bonar Plastics",
+      "contact": "Emanuel Batista / Sheri Alwine",
+      "source": "email",
+      "stage": 7,
+      "sku": "PB2145 bulk bins — 10 units",
+      "qty": 10,
+      "quoteNo": null,
+      "customerPo": "20260805",
+      "mfrPo": "SO-509748",
+      "manufacturer": "Bonar Plastics",
+      "unitPrice": null,
+      "requestedDate": null,
+      "confirmedDate": null,
+      "readyDate": "2026-09-22",
+      "freight": "CH Robinson — Jason Jenkins (913-713-1635). Pickup from West Chicago, IL by 9/26",
+      "freightType": "CH Robinson",
+      "bol": null,
+      "invoiceNo": null,
+      "amount": null,
+      "paymentStatus": "n/a",
+      "owner": "Emily",
+      "nextAction": "Schedule pickup with Jason Jenkins — deadline 9/26",
+      "deadline": "2026-09-26",
+      "blocker": "Pickup date not confirmed with CH Robinson",
+      "bruceNeeded": false,
+      "bruceReason": "",
+      "notes": "Pack slip generated 9/22. Ship from: Bonar Plastics, 1005 Atlantic Drive, West Chicago IL 60185. Hours 7AM-5PM. 10 × PB2145 bulk bins, 1,760 lb total, 5 pallet spots. Freight pre-arranged via CH Robinson — no charges due at pickup.",
+      "history": [
+        { "at": "2026-09-22", "text": "Pack slip generated — ready for CH Robinson pickup scheduling" }
+      ]
+    },
+    {
       "id": "WO-2026-0008",
       "customer": "New England Marine",
       "contact": "Receiving",
@@ -726,7 +785,7 @@ tr.order-row.shipping-due:hover { background: #fee2e2; }
 }
 ;</script>
 <script>
-const STORAGE_KEY = "trident-ops-hub-v2";
+const STORAGE_KEY = "trident-ops-hub-v3";
 const FREIGHT_OPTIONS = [
   { value: "", label: "— not set —" },
   { value: "CH Robinson", label: "CH Robinson" },
@@ -783,6 +842,20 @@ function shippingAlerts() {
   });
 }
 
+function pickupUnscheduled() {
+  return state.orders.filter((o) => {
+    if (!isOpen(o)) return false;
+    return Number(o.stage) === 7 && !o.confirmedDate;
+  });
+}
+
+function daysWaitingPickup(order) {
+  const ref = order.readyDate || (order.history || []).slice(-1)[0]?.at;
+  if (!ref) return 0;
+  const then = new Date(ref + "T12:00:00");
+  return Math.max(0, Math.round((new Date() - then) / 86400000));
+}
+
 async function loadData() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
@@ -817,6 +890,7 @@ function filteredOrders() {
   if (state.filter === "open") list = list.filter(isOpen);
   if (state.filter === "new") list = list.filter((o) => Number(o.stage) === 1);
   if (state.filter === "bruce") list = list.filter((o) => o.bruceNeeded && isOpen(o));
+  if (state.filter === "pickup-unscheduled") list = pickupUnscheduled();
   if (state.filter === "shipping-alerts") list = shippingAlerts();
   if (state.filter === "all") list = list;
   if (String(state.filter).startsWith("stage:")) {
@@ -846,6 +920,7 @@ function counts() {
     bruce: state.orders.filter((o) => o.bruceNeeded && isOpen(o)).length,
     all: state.orders.length,
     shipping: shippingAlerts().length,
+    pickup: pickupUnscheduled().length,
   };
 }
 
@@ -856,8 +931,11 @@ function renderStats() {
   $("#stat-bruce").textContent = c.bruce;
   $("#stat-all").textContent = c.all;
   $("#stat-shipping").textContent = c.shipping;
+  $("#stat-pickup").textContent = c.pickup;
   const wrap = $("#stat-shipping-wrap");
   wrap.classList.toggle("alert-stat", c.shipping > 0);
+  const pickupWrap = $("#stat-pickup-wrap");
+  pickupWrap.classList.toggle("warn-stat", c.pickup > 0);
 }
 
 function renderShippingAlerts() {
@@ -880,12 +958,29 @@ function renderShippingAlerts() {
   }).join("");
 }
 
+function renderPickupAlerts() {
+  const pending = pickupUnscheduled();
+  const banner = $("#pickup-alert-banner");
+  const list = $("#pickup-alert-list");
+  if (!pending.length) {
+    banner.classList.remove("visible");
+    return;
+  }
+  banner.classList.add("visible");
+  list.innerHTML = pending.map((o) => {
+    const days = daysWaitingPickup(o);
+    const aged = days > 0 ? ` · <strong>${days}d waiting</strong>` : "";
+    return `<li>${escapeHtml(o.customer)} — ${escapeHtml(o.id)} · ${escapeHtml(o.sku)}${aged} · deadline ${escapeHtml(o.deadline || "not set")}</li>`;
+  }).join("");
+}
+
 function renderNav() {
   const c = counts();
   const items = [
     ["open", "Open work", c.open],
     ["new", "New inquiries", c.new],
     ["bruce", "Needs Bruce", c.bruce],
+    ["pickup-unscheduled", "Awaiting pickup", c.pickup],
     ["shipping-alerts", "Shipping due ≤72h", c.shipping],
     ["all", "All work orders", c.all],
   ];
@@ -914,8 +1009,10 @@ function renderBoard() {
   $("#detail-view").hidden = true;
   renderStats();
   renderShippingAlerts();
+  renderPickupAlerts();
   renderNav();
   const alertIds = new Set(shippingAlerts().map((o) => o.id));
+  const pickupIds = new Set(pickupUnscheduled().map((o) => o.id));
   const list = filteredOrders();
   const body = $("#order-rows");
   if (!list.length) {
@@ -925,22 +1022,28 @@ function renderBoard() {
   body.innerHTML = list
     .map((o) => {
       const isShipAlert = alertIds.has(o.id);
-      const hrs = isShipAlert ? hoursUntilDeadline(o.deadline) : null;
+      const isPickupPending = pickupIds.has(o.id);
+      const pickupDays = isPickupPending ? daysWaitingPickup(o) : 0;
+      const rowClass = isShipAlert ? " shipping-due" : isPickupPending && pickupDays >= 1 ? " pickup-overdue" : "";
       const pills = [
         `<span class="pill stage">${stageLabel(o.stage)}</span>`,
         o.bruceNeeded ? `<span class="pill bruce">Bruce</span>` : "",
         isShipAlert ? `<span class="pill ship-alert">⚠ Ship ≤72h</span>` : "",
+        isPickupPending ? `<span class="pill pickup-alert">📦 No pickup date</span>` : "",
         o.blocker ? `<span class="pill warn">Blocked</span>` : "",
         !isOpen(o) ? `<span class="pill ok">Closed</span>` : "",
       ]
         .filter(Boolean).join(" ");
-      return `<tr class="order-row${isShipAlert ? " shipping-due" : ""}" data-id="${o.id}">
+      const daysHint = isPickupPending && pickupDays > 0
+        ? `${pickupDays}d waiting for pickup`
+        : daysInStageHint(o);
+      return `<tr class="order-row${rowClass}" data-id="${o.id}">
         <td><strong>${escapeHtml(o.customer)}</strong><div class="muted mono">${escapeHtml(o.id)}</div></td>
         <td>${pills}</td>
         <td>${escapeHtml(o.contact || "—")}</td>
         <td>${escapeHtml(o.customerPo || o.quoteNo || "—")}</td>
         <td>${escapeHtml(o.nextAction || "—")}<div class="muted">${escapeHtml(o.owner || "")}</div></td>
-        <td>${escapeHtml(o.deadline || "—")}<div class="muted">${escapeHtml(daysInStageHint(o))}</div></td>
+        <td>${escapeHtml(o.deadline || "—")}<div class="muted">${escapeHtml(daysHint)}</div></td>
         <td>${escapeHtml(o.blocker || "—")}</td>
       </tr>`;
     })
@@ -977,6 +1080,13 @@ function renderDetail(id) {
     }
   }
 
+  // Pickup unscheduled alert
+  if (isOpen(order) && Number(order.stage) === 7 && !order.confirmedDate) {
+    const days = daysWaitingPickup(order);
+    const aged = days > 0 ? ` · ${days} day${days !== 1 ? "s" : ""} waiting` : "";
+    banners.push(`<div class="banner warn"><strong>📦 Pickup not scheduled:</strong> no confirmed pickup date yet${aged}. Set the date in the field below once Jason confirms.</div>`);
+  }
+
   if (order.bruceNeeded) {
     banners.push(`<div class="banner warn"><strong>Needs Bruce:</strong> ${escapeHtml(order.bruceReason || "Decision required")}</div>`);
   }
@@ -1011,11 +1121,11 @@ function renderDetail(id) {
     ["Confirmed date", order.confirmedDate],
   ]);
 
-  const freightDisplay = order.freightType || order.freight;
   $("#kv-supply").innerHTML = kvPairs([
     ["Manufacturer", order.manufacturer],
     ["Mfr PO", order.mfrPo],
     ["Ready date", order.readyDate],
+    ["Pickup confirmed", order.confirmedDate || "Not scheduled"],
     ["Shipping method", order.freightType || "—"],
     ["Freight notes", order.freight],
     ["BOL / PRO", order.bol],
@@ -1046,6 +1156,7 @@ function renderDetail(id) {
     .join("");
   $("#edit-owner").value = order.owner || "";
   $("#edit-freight-type").value = order.freightType || "";
+  $("#edit-confirmed-date").value = order.confirmedDate || "";
   $("#edit-next").value = order.nextAction || "";
   $("#edit-deadline").value = order.deadline || "";
   $("#edit-blocker").value = order.blocker || "";
@@ -1088,8 +1199,14 @@ function saveDetailEdits() {
     return;
   }
 
+  const prevConfirmedDate = order.confirmedDate;
   order.owner = $("#edit-owner").value.trim();
   order.freightType = $("#edit-freight-type").value;
+  order.confirmedDate = $("#edit-confirmed-date").value.trim() || null;
+  if (order.confirmedDate && !prevConfirmedDate) {
+    order.history = order.history || [];
+    order.history.push({ at: new Date().toISOString().slice(0, 10), text: `Pickup confirmed for ${order.confirmedDate}` });
+  }
   order.nextAction = $("#edit-next").value.trim();
   order.deadline = $("#edit-deadline").value.trim();
   order.blocker = $("#edit-blocker").value.trim();
